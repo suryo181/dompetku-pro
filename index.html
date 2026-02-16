@@ -6,23 +6,38 @@
     <title>DompetKu Pro - Grafik & Riwayat</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        :root { --primary: #1a73e8; --success: #2ecc71; --danger: #e74c3c; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .container { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 420px; }
         .hidden { display: none !important; }
-        h2 { text-align: center; color: #1a73e8; margin-top: 0; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: #e8f0fe; padding: 10px; border-radius: 8px; margin-bottom: 20px; }
-        .chart-container { margin: 20px 0; height: 200px; display: flex; justify-content: center; }
-        .balance-box { text-align: center; background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        #balance { font-size: 28px; color: #2ecc71; margin: 5px 0; }
-        input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 14px; }
-        button { background: #1a73e8; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #1557b0; }
-        .btn-logout { width: auto; background: #ff4757; padding: 5px 12px; font-size: 12px; }
-        ul { list-style: none; padding: 0; margin-top: 20px; max-height: 250px; overflow-y: auto; }
-        li { background: #f9f9f9; margin-bottom: 8px; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ddd; }
-        li.plus { border-left-color: #2ecc71; }
-        li.minus { border-left-color: #e74c3c; }
-        .del-btn { background: none; color: #ff4757; border: none; width: auto; font-size: 18px; padding: 0 5px; }
+        
+        /* Header & User Profile */
+        h2 { text-align: center; color: var(--primary); margin: 0 0 20px 0; }
+        .user-info { display: flex; align-items: center; gap: 10px; background: #e8f0fe; padding: 12px; border-radius: 12px; margin-bottom: 20px; }
+        .user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; }
+        .user-info span { flex: 1; font-weight: bold; font-size: 14px; }
+
+        /* Balance & Chart */
+        .balance-box { text-align: center; padding: 15px; border-radius: 15px; border: 1px dashed #ccc; margin-bottom: 10px; }
+        #balance { font-size: 32px; color: var(--success); margin: 5px 0; font-weight: 800; }
+        .chart-container { height: 200px; margin-bottom: 20px; }
+
+        /* Filter & Form */
+        .filter-section { margin-bottom: 15px; }
+        label { font-size: 12px; color: #666; font-weight: bold; }
+        input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; outline: none; }
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-logout { width: auto; background: var(--danger); padding: 6px 15px; font-size: 11px; margin: 0; }
+
+        /* Transaction List */
+        ul { list-style: none; padding: 0; margin-top: 20px; max-height: 300px; overflow-y: auto; }
+        li { background: #fdfdfd; margin-bottom: 10px; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; border-left: 6px solid #ccc; transition: 0.2s; }
+        li.plus { border-left-color: var(--success); }
+        li.minus { border-left-color: var(--danger); }
+        li:hover { background: #f8f9fa; }
+        .del-btn { background: none; color: #bbb; border: none; width: auto; font-size: 20px; padding: 0; margin: 0; }
+        .del-btn:hover { color: var(--danger); }
     </style>
 </head>
 <body>
@@ -30,18 +45,33 @@
 <div class="container">
     <div id="login-screen">
         <h2>DompetKu 💰</h2>
-        <p style="text-align: center; color: #666;">Kelola uangmu dengan aman & lihat grafiknya.</p>
-        <button onclick="loginGoogle()" style="background: #4285F4; margin-top: 20px;">Login dengan Google</button>
+        <p style="text-align: center; color: #777; font-size: 14px;">Catat keuangan pribadi dengan aman dan lihat grafik pengeluaranmu.</p>
+        <button onclick="loginGoogle()" style="background: #4285F4; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Login dengan Google
+        </button>
     </div>
 
     <div id="main-screen" class="hidden">
         <div class="user-info">
+            <img id="user-photo" src="" alt="Avatar">
             <span id="user-name">Memuat...</span>
             <button class="btn-logout" id="btn-logout">Logout</button>
         </div>
 
+        <div class="filter-section">
+            <label>LIHAT LAPORAN BULAN:</label>
+            <select id="filter-bulan">
+                <option value="01">Januari</option> <option value="02">Februari</option>
+                <option value="03">Maret</option> <option value="04">April</option>
+                <option value="05">Mei</option> <option value="06">Juni</option>
+                <option value="07">Juli</option> <option value="08">Agustus</option>
+                <option value="09">September</option> <option value="10">Oktober</option>
+                <option value="11">November</option> <option value="12">Desember</option>
+            </select>
+        </div>
+
         <div class="balance-box">
-            <small>Total Saldo Anda</small>
+            <small>Total Saldo Bulan Ini</small>
             <h1 id="balance">Rp 0</h1>
         </div>
 
@@ -50,13 +80,13 @@
         </div>
 
         <form id="form">
-            <input type="text" id="text" placeholder="Nama transaksi (ex: Bakso)" required>
+            <input type="text" id="text" placeholder="Nama transaksi (ex: Token Listrik)" required>
             <input type="number" id="amount" placeholder="Jumlah (Rp)" required>
             <select id="type">
                 <option value="plus">Pemasukan (+)</option>
                 <option value="minus">Pengeluaran (-)</option>
             </select>
-            <button type="submit">Tambah Catatan</button>
+            <button type="submit">Catat Transaksi</button>
         </form>
 
         <h3>Riwayat Transaksi</h3>
@@ -85,8 +115,9 @@
 
     let myChart = null;
     let currentUser = null;
+    let unsubscribe = null;
 
-    // --- FUNGSI LOGIN ---
+    // --- AUTH LOGIC ---
     window.loginGoogle = () => signInWithPopup(auth, provider);
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
@@ -95,34 +126,56 @@
             currentUser = user;
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-screen').classList.remove('hidden');
-            document.getElementById('user-name').innerText = "Halo, " + user.displayName.split(' ')[0];
-            initApp(user.uid);
+            document.getElementById('user-name').innerText = user.displayName;
+            document.getElementById('user-photo').src = user.photoURL;
+            
+            // Set default bulan ke bulan sekarang
+            const currentMonth = (new Date().getMonth() + 1).toString().padStart(2, '0');
+            document.getElementById('filter-bulan').value = currentMonth;
+            
+            initData(user.uid, currentMonth);
         } else {
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('main-screen').classList.add('hidden');
+            if (unsubscribe) unsubscribe();
         }
     });
 
-    function initApp(uid) {
+    // --- REFRESH DATA BERDASARKAN BULAN ---
+    const filterBulanEl = document.getElementById('filter-bulan');
+    filterBulanEl.onchange = () => initData(currentUser.uid, filterBulanEl.value);
+
+    function initData(uid, bulan) {
+        if (unsubscribe) unsubscribe(); // Matikan listener lama
+
         const q = query(collection(db, "transaksi"), where("userId", "==", uid), orderBy("createdAt", "desc"));
         
-        onSnapshot(q, (snapshot) => {
+        unsubscribe = onSnapshot(q, (snapshot) => {
             let total = 0, income = 0, expense = 0;
             const listEl = document.getElementById('list');
             listEl.innerHTML = '';
 
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
-                if (data.type === 'plus') { total += data.amount; income += data.amount; }
-                else { total -= data.amount; expense += data.amount; }
+                const date = new Date(data.createdAt);
+                const dataMonth = (date.getMonth() + 1).toString().padStart(2, '0');
 
-                const li = document.createElement('li');
-                li.className = data.type;
-                li.innerHTML = `
-                    <span><b>${data.text}</b><br><small>Rp ${data.amount.toLocaleString()}</small></span>
-                    <button class="del-btn" onclick="hapusData('${docSnap.id}')">&times;</button>
-                `;
-                listEl.appendChild(li);
+                // Hanya tampilkan jika bulan cocok
+                if (dataMonth === bulan) {
+                    if (data.type === 'plus') { total += data.amount; income += data.amount; }
+                    else { total -= data.amount; expense += data.amount; }
+
+                    const li = document.createElement('li');
+                    li.className = data.type;
+                    li.innerHTML = `
+                        <div>
+                            <strong>${data.text}</strong><br>
+                            <small>${date.toLocaleDateString('id-ID')} - Rp ${data.amount.toLocaleString()}</small>
+                        </div>
+                        <button class="del-btn" onclick="hapusData('${docSnap.id}')">&times;</button>
+                    `;
+                    listEl.appendChild(li);
+                }
             });
 
             document.getElementById('balance').innerText = "Rp " + total.toLocaleString();
@@ -130,40 +183,44 @@
         });
     }
 
-    // --- FUNGSI GRAFIK ---
+    // --- CHART LOGIC ---
     function updateChart(plus, minus) {
         const ctx = document.getElementById('myChart').getContext('2d');
         if (myChart) myChart.destroy();
         
+        if (plus === 0 && minus === 0) {
+            // Tampilan jika data kosong
+            myChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Kosong'], datasets: [{ data: [1], backgroundColor: ['#eee'] }] } });
+            return;
+        }
+
         myChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Masuk', 'Keluar'],
-                datasets: [{
-                    data: [plus, minus],
-                    backgroundColor: ['#2ecc71', '#e74c3c'],
-                    borderWidth: 0
-                }]
+                datasets: [{ data: [plus, minus], backgroundColor: ['#2ecc71', '#e74c3c'], borderWidth: 0 }]
             },
-            options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+            options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
         });
     }
 
-    // --- TAMBAH & HAPUS ---
+    // --- CRUD ---
     document.getElementById('form').onsubmit = async (e) => {
         e.preventDefault();
-        await addDoc(collection(db, "transaksi"), {
-            userId: currentUser.uid,
-            text: document.getElementById('text').value,
-            amount: Number(document.getElementById('amount').value),
-            type: document.getElementById('type').value,
-            createdAt: Date.now()
-        });
-        document.getElementById('form').reset();
+        try {
+            await addDoc(collection(db, "transaksi"), {
+                userId: currentUser.uid,
+                text: document.getElementById('text').value,
+                amount: Number(document.getElementById('amount').value),
+                type: document.getElementById('type').value,
+                createdAt: Date.now()
+            });
+            document.getElementById('form').reset();
+        } catch (err) { alert("Gagal menyimpan: " + err.message); }
     };
 
     window.hapusData = async (id) => {
-        if (confirm("Hapus catatan ini?")) await deleteDoc(doc(db, "transaksi", id));
+        if (confirm("Hapus transaksi ini?")) await deleteDoc(doc(db, "transaksi", id));
     };
 </script>
 </body>
